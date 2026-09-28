@@ -20,6 +20,7 @@
 
     <modules>
         <module>microservices/config-server</module>
+        <module>microservices/discovery-server</module>
     </modules>
 
     <dependencyManagement>
