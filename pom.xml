@@ -21,6 +21,7 @@
     <modules>
         <module>microservices/config-server</module>
         <module>microservices/discovery-server</module>
+        <module>microservices/api-gateway</module>
     </modules>
 
     <dependencyManagement>
