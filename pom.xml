@@ -22,6 +22,7 @@
         <module>microservices/config-server</module>
         <module>microservices/discovery-server</module>
         <module>microservices/api-gateway</module>
+        <module>microservices/product-catalog-service</module>
     </modules>
 
     <dependencyManagement>
