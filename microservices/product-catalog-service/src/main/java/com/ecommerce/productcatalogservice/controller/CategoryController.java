@@ -8,35 +8,50 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
 
+import com.ecommerce.productcatalogservice.dto.category.request.CreateCategoryRequest;
+import com.ecommerce.productcatalogservice.dto.category.response.CategoryResponse;
 import com.ecommerce.productcatalogservice.entity.Category;
+import com.ecommerce.productcatalogservice.mapper.CategoryMapper;
 import com.ecommerce.productcatalogservice.repository.CategoryRepository;
+
+import jakarta.validation.Valid;
 
 @RestController 
 @RequestMapping ("/api/categories")
 public class CategoryController {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
-    public CategoryController(CategoryRepository categoryRepository) {
+    public CategoryController(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
     }
 
     @GetMapping 
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public List<CategoryResponse> getAllCategories() {
+        return categoryRepository.findAll().stream()
+                .map(categoryMapper::toResponse)
+                .toList();
     }
     
     @PostMapping
-    public Category createCategory(@RequestBody Category category) {
-        return categoryRepository.save(category);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryResponse createCategory(@Valid @RequestBody CreateCategoryRequest category) {
+        Category newCategory = categoryMapper.toEntity(category);
+        Category savedCategory = categoryRepository.save(newCategory);
+        return categoryMapper.toResponse(savedCategory);
     }
 
     @GetMapping("/{id}")
-    public Category getCategoryById(@PathVariable UUID id) {
+    public CategoryResponse getCategoryById(@PathVariable UUID id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .map(categoryMapper::toResponse)
+                .orElseThrow(() -> new RuntimeException("Category not found!"));
     }
 
 }
